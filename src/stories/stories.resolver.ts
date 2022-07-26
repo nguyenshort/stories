@@ -1,4 +1,4 @@
-import {Args, Int, Mutation, Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
+import {Args, Int, Mutation, Parent, Query, ResolveField, Resolver, ResolveReference} from '@nestjs/graphql';
 import {StoriesService} from './stories.service';
 import {Story} from './entities/story.entity';
 import {User} from "./entities/user.entity";
@@ -105,5 +105,11 @@ export class StoriesResolver {
   @ResolveField('categories', () => [Category])
   getCategories(@Parent() post: Story) {
     return post.categories.map((category) => { return { __typename: 'Category', id: category }});
+  }
+
+
+  @ResolveReference()
+  resolveReference(reference: { __typename: string; id: string }) {
+    return this.storiesService.findOne({ _id: reference.id })
   }
 }
