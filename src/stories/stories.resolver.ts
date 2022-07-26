@@ -41,15 +41,12 @@ export class StoriesResolver {
   }
 
   @ResolveField('user', () => User)
-  async getUser(@Parent() post: User) {
-    return { __typename: 'User', id: 'post.userId' };
+  async getUser(@Parent() post: Story) {
+    return { __typename: 'User', id: post.user };
   }
 
   @ResolveField('categories', () => [Category])
-  async getCategories(@Parent() post: Story) {
-    const _categories = post.categories.map((category) => category.toString());
-    const categories = await this.categoriesService.getCategories(_categories)
-    console.log(categories)
-    return categories
+  getCategories(@Parent() post: Story) {
+    return post.categories.map((category) => { return { __typename: 'Category', id: category }});
   }
 }
