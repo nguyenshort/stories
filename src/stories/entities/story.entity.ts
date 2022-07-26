@@ -63,6 +63,8 @@ export class Story {
   })
   categories: Types.ObjectId[]
 
+  // Todo: add counter
+
   @Field(() => Float)
   @Prop({ default: Date.now, index: true })
   createdAt: number
