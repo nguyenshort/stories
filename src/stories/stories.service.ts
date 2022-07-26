@@ -5,6 +5,7 @@ import {FilterQuery, Model, ProjectionType, Types} from 'mongoose'
 import {Story, StoryDocument} from "./entities/story.entity";
 import {GetStoriesFilter} from "./filter/get-stories.filter";
 import {User} from "./entities/user.entity";
+import {CountStoriesFilter} from "./filter/count-stories.filter";
 
 @Injectable()
 export class StoriesService {
@@ -19,7 +20,7 @@ export class StoriesService {
     })
   }
 
-  async findAll(match: FilterQuery<StoryDocument>, filter: GetStoriesFilter) {
+  async findMany(match: FilterQuery<StoryDocument>, filter: GetStoriesFilter) {
     return this.model
       .find()
       .sort({
@@ -53,5 +54,25 @@ export class StoriesService {
       { $sample: { size } },
       { $addFields: { id: '$_id' } }
     ])
+  }
+
+
+  buildStoriesMatch(
+      filter: CountStoriesFilter
+  ): FilterQuery<StoryDocument> {
+    const match: FilterQuery<StoryDocument> = {}
+    if (filter.status) {
+      match.status = { $in: filter.status }
+    }
+    if (filter.category) {
+      match.categories = new Types.ObjectId(filter.category)
+    }
+    if (filter.authors) {
+      match.authors = filter.authors
+    }
+    if (filter.teams) {
+      match.teams = filter.teams
+    }
+    return match
   }
 }

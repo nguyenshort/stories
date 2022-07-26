@@ -1,4 +1,4 @@
-import {Args, Mutation, Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
+import {Args, Int, Mutation, Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
 import {StoriesService} from './stories.service';
 import {Story} from './entities/story.entity';
 import {User} from "./entities/user.entity";
@@ -7,6 +7,10 @@ import {CurrentUser, InputValidator, MicroAuthGuard, NotFoundError, TestUser} fr
 import {CreateStoryInput} from "./dto/create-story.input";
 import {Logger, UseGuards} from "@nestjs/common";
 import {CategoriesService} from "./categories.service";
+import {GetStoriesFilter} from "./filter/get-stories.filter";
+import {CountStoriesFilter} from "./filter/count-stories.filter";
+import {UpdateStoryInput} from "./dto/update-story.input";
+import {SomeStoriesFilter} from "./filter/some-stories.filter";
 
 @Resolver(() => Story)
 export class StoriesResolver {
@@ -30,6 +34,32 @@ export class StoriesResolver {
     return this.storiesService.create(user, input)
   }
 
+  @Mutation(() => Story)
+  async updateStory(
+      @Args('input', new InputValidator()) input: UpdateStoryInput
+  ) {
+    const story = await this.storiesService.findOne(
+        { _id: input.id },
+        {
+          _id: 1
+        }
+    )
+    if (!story) {
+      throw new NotFoundError('Story not found')
+    }
+    if (input.categories) {
+      const _categories = await this.categoriesService.getCategories(input.categories)
+      input.categories = _categories.map((category) => category.id)
+    }
+    const _form = {}
+    Object.entries(input).forEach(([key, value]) => {
+      if (value) {
+        _form[key] = value
+      }
+    })
+    return this.storiesService.update({ _id: story._id }, input)
+  }
+
   @Query(() => Story, { name: 'story' })
   async findOne(@Args('slug', { type: () => String }) slug: string) {
     const story = await this.storiesService.findOne({ slug })
@@ -38,6 +68,33 @@ export class StoriesResolver {
     }
     // this.eventEmitter.emit('story:view', story)
     return story
+  }
+
+  @Query(() => [Story], { name: 'stories' })
+  async findMany(
+      @Args('filter', new InputValidator()) filter: GetStoriesFilter
+  ) {
+    const match = this.storiesService.buildStoriesMatch(filter)
+    this.logger.debug(`findMany: ${JSON.stringify(match)}`)
+
+    return this.storiesService.findMany(match, filter)
+  }
+
+  @Query(() => Int)
+  async countStories(
+      @Args('filter', new InputValidator()) filter: CountStoriesFilter
+  ) {
+    const match = this.storiesService.buildStoriesMatch(filter)
+    return this.storiesService.count(match)
+  }
+
+  @Query(() => [Story])
+  async someStories(
+      @Args('filter', new InputValidator()) filter: SomeStoriesFilter
+  ) {
+    const match = this.storiesService.buildStoriesMatch(filter)
+    this.logger.debug(`someStories: ${JSON.stringify(match)}`)
+    return this.storiesService.some(match, filter.size)
   }
 
   @ResolveField('user', () => User)

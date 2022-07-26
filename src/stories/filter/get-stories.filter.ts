@@ -1,16 +1,11 @@
-import { Field, ID, InputType } from '@nestjs/graphql'
-import { IsNotEmpty, IsOptional } from 'class-validator'
-import {FilterOffset, IsObjectID} from "@comico/shared";
+import {Field, ID, InputType, Int} from '@nestjs/graphql'
+import {IsNotEmpty, IsNumber, IsOptional, Max, Min} from 'class-validator'
+import {IsObjectID} from "@comico/shared";
 import {StoryStatus} from "../enum/story.status.enum";
+import {FilterOffset} from "../../apollo/args/filter-offset.input";
 
 @InputType()
-export class GetStoriesFilter extends FilterOffset {
-  @Field(() => String, {
-    description: 'To sort in counter use syntax: "{name}-{socpe}"'
-  })
-  @IsNotEmpty({ message: 'Sắp xếp là bắt buộc' })
-  sort: string
-
+export class GetStoriesFilter extends FilterOffset{
   @Field(() => [StoryStatus], {
     description: 'Filter by status',
     nullable: true

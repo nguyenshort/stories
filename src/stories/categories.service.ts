@@ -10,7 +10,7 @@ export class CategoriesService {
 
   constructor(@Inject('CATEGORY_SERVICE') readonly client: ClientProxy) {}
 
-  async getCategories(input: string[]) {
+  async getCategories(input: string[]): Promise<Category[]> {
 
     try {
       return lastValueFrom(this.client.send<Category[], string[]>('categories:findMany', input))
