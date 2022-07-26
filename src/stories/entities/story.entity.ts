@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Types } from 'mongoose'
-import { Field, Float, ID, ObjectType } from '@nestjs/graphql'
+import {Directive, Field, Float, ID, ObjectType} from '@nestjs/graphql'
 import {StoryStatus} from "../enum/story.status.enum";
 
 export type StoryDocument = Story & Document
@@ -14,6 +14,7 @@ export type StoryDocument = Story & Document
   }
 })
 @ObjectType()
+@Directive('@key(fields: "id")')
 export class Story {
   @Field(() => ID)
   id: string
@@ -51,8 +52,7 @@ export class Story {
   @Prop({
     index: true,
     default: StoryStatus.ON_GOING,
-    type: String,
-    enum: StoryStatus
+    type: String
   })
   @Field(() => StoryStatus, { defaultValue: StoryStatus.ON_GOING })
   status: StoryStatus
@@ -61,7 +61,7 @@ export class Story {
     type: [{ type: Types.ObjectId, index: true }],
     index: true
   })
-  categories: any[]
+  categories: Types.ObjectId[]
 
   @Field(() => Float)
   @Prop({ default: Date.now, index: true })

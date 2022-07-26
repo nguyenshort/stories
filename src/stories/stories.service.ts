@@ -1,26 +1,57 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStoryInput } from './dto/create-story.input';
-import { UpdateStoryInput } from './dto/update-story.input';
+import { Injectable } from '@nestjs/common'
+import { CreateStoryInput } from './dto/create-story.input'
+import { InjectModel } from '@nestjs/mongoose'
+import {FilterQuery, Model, ProjectionType, Types} from 'mongoose'
+import {Story, StoryDocument} from "./entities/story.entity";
+import {GetStoriesFilter} from "./filter/get-stories.filter";
+import {User} from "./entities/user.entity";
 
 @Injectable()
 export class StoriesService {
-  create(createStoryInput: CreateStoryInput) {
-    return 'This action adds a new story';
+  constructor(@InjectModel(Story.name) private model: Model<StoryDocument>) {}
+
+  async create(user: User, input: CreateStoryInput) {
+    return this.model.create({
+      ...input,
+      user: new Types.ObjectId(user.id),
+      categories: input.categories.map((category) => new Types.ObjectId(category)),
+      createdAt: Date.now()
+    })
   }
 
-  findAll() {
-    return `This action returns all stories`;
+  async findAll(match: FilterQuery<StoryDocument>, filter: GetStoriesFilter) {
+    return this.model
+      .find()
+      .sort({
+        [filter.sort]: -1
+      })
+      .skip(filter.offset)
+      .limit(filter.limit)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} story`;
+  async findOne(
+    filter: FilterQuery<StoryDocument>,
+    projection?: ProjectionType<StoryDocument>
+  ) {
+    return this.model.findOne(filter, projection)
   }
 
-  update(id: number, updateStoryInput: UpdateStoryInput) {
-    return `This action updates a #${id} story`;
+  async update(
+    filter: FilterQuery<StoryDocument>,
+    doc: Partial<CreateStoryInput>
+  ) {
+    return this.model.findOneAndUpdate(filter, doc, { new: true })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} story`;
+  async count(match: FilterQuery<StoryDocument>) {
+    return this.model.countDocuments(match)
+  }
+
+  async some(match: FilterQuery<StoryDocument>, size: number) {
+    return this.model.aggregate([
+      { $match: match },
+      { $sample: { size } },
+      { $addFields: { id: '$_id' } }
+    ])
   }
 }
