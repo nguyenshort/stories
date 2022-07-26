@@ -1,9 +1,10 @@
 import {Module} from '@nestjs/common';
-import {StoriesService} from './stories.service';
 import {StoriesResolver} from './stories.resolver';
 import {MongooseModule} from "@nestjs/mongoose";
 import {Story, StorySchema} from "./entities/story.entity";
 import {ClientsModule, Transport} from "@nestjs/microservices";
+import {StoriesController} from "./stories.controller";
+import {StoriesService} from "./stories.service";
 import {CategoriesService} from "./categories.service";
 
 
@@ -34,6 +35,7 @@ export const CATEGORY_SERVICE = ClientsModule.register([
                 }
             }
         ])],
-    providers: [StoriesResolver, StoriesService, CategoriesService]
+    providers: [StoriesResolver, StoriesService, CategoriesService],
+    controllers: [StoriesController]
 })
 export class StoriesModule {}

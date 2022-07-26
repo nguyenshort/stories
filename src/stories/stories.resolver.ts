@@ -6,11 +6,11 @@ import {Category} from "./entities/category.entity";
 import {CurrentUser, InputValidator, MicroAuthGuard, NotFoundError, TestUser} from "@comico/shared";
 import {CreateStoryInput} from "./dto/create-story.input";
 import {Logger, UseGuards} from "@nestjs/common";
-import {CategoriesService} from "./categories.service";
 import {GetStoriesFilter} from "./filter/get-stories.filter";
 import {CountStoriesFilter} from "./filter/count-stories.filter";
 import {UpdateStoryInput} from "./dto/update-story.input";
 import {SomeStoriesFilter} from "./filter/some-stories.filter";
+import {CategoriesService} from "./categories.service";
 
 @Resolver(() => Story)
 export class StoriesResolver {
