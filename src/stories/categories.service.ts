@@ -2,13 +2,14 @@ import {Inject, Injectable, Logger} from '@nestjs/common'
 import {ClientProxy} from "@nestjs/microservices";
 import {Category} from "./entities/category.entity";
 import {lastValueFrom} from "rxjs";
+import {ComicoAdapterKey} from "@comico/shared";
 
 @Injectable()
 export class CategoriesService {
 
   readonly logger = new Logger(CategoriesService.name)
 
-  constructor(@Inject('CATEGORY_SERVICE') readonly client: ClientProxy) {}
+  constructor(@Inject(ComicoAdapterKey.CATEGORIES) readonly client: ClientProxy) {}
 
   async getCategories(input: string[]): Promise<Category[]> {
 

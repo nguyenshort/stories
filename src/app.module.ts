@@ -1,12 +1,16 @@
-import { Module } from '@nestjs/common';
-import {DatabaseModule} from "./database/database.module";
+import {Module} from '@nestjs/common';
 import {ApolloModule} from "./apollo/apollo.module";
-import {AuthModule} from "@comico/shared";
-import { StoriesModule } from './stories/stories.module';
+import {StoriesModule} from './stories/stories.module';
+import {MongooseModule} from "@nestjs/mongoose";
 
 @Module({
-  imports: [ApolloModule, DatabaseModule, AuthModule, StoriesModule],
-  controllers: [],
-  providers: [],
+    imports: [
+        ApolloModule,
+        MongooseModule.forRoot('mongodb://localhost/stories'),
+        StoriesModule
+    ],
+    controllers: [],
+    providers: [],
 })
-export class AppModule {}
+export class AppModule {
+}

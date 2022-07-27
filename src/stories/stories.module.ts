@@ -6,25 +6,10 @@ import {ClientsModule, Transport} from "@nestjs/microservices";
 import {StoriesController} from "./stories.controller";
 import {StoriesService} from "./stories.service";
 import {CategoriesService} from "./categories.service";
-
-
-export const CATEGORY_SERVICE = ClientsModule.register([
-    {
-        name: 'CATEGORY_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-            urls: ['amqp://localhost:5672'],
-            queue: 'categories_queue',
-            queueOptions: {
-                durable: false
-            }
-        }
-    }
-])
+import {ComicoAdapter} from "@comico/shared";
 
 @Module({
     imports: [
-        CATEGORY_SERVICE,
         MongooseModule.forFeatureAsync([
             {
                 name: Story.name,
@@ -34,8 +19,14 @@ export const CATEGORY_SERVICE = ClientsModule.register([
                     return schema
                 }
             }
-        ])],
+        ]),
+        ClientsModule.register([
+            ComicoAdapter.users(),
+            ComicoAdapter.categories()
+        ])
+    ],
     providers: [StoriesResolver, StoriesService, CategoriesService],
     controllers: [StoriesController]
 })
-export class StoriesModule {}
+export class StoriesModule {
+}
