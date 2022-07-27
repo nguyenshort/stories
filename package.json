@@ -33,7 +33,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "@comico/shared": "*",
+    "@comico/shared": "0.0.12",
     "mongoose": "^6.4.6",
     "mongoose-slug-updater": "^3.3.0",
     "class-validator": "^0.13.2",
