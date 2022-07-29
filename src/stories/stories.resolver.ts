@@ -11,6 +11,7 @@ import {CountStoriesFilter} from "./filter/count-stories.filter";
 import {UpdateStoryInput} from "./dto/update-story.input";
 import {SomeStoriesFilter} from "./filter/some-stories.filter";
 import {CategoriesService} from "./categories.service";
+import {EventEmitter2} from "@nestjs/event-emitter";
 
 @Resolver(() => Story)
 export class StoriesResolver {
@@ -19,8 +20,10 @@ export class StoriesResolver {
 
   constructor(
       private readonly storiesService: StoriesService,
-      private readonly categoriesService: CategoriesService
-  ) {}
+      private readonly categoriesService: CategoriesService,
+      private readonly eventEmitter: EventEmitter2
+
+) {}
 
   @Mutation(() => Story)
   @UseGuards(MicroAuthGuard)
@@ -66,7 +69,7 @@ export class StoriesResolver {
     if (!story) {
       throw new NotFoundError('Story not found')
     }
-    // this.eventEmitter.emit('story:view', story)
+    this.eventEmitter.emit('story:view', story)
     return story
   }
 
