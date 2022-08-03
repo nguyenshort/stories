@@ -1,5 +1,5 @@
 import { OnEvent } from '@nestjs/event-emitter';
-import { StoryDocument } from './entities/story.entity';
+import { StoryDocument } from '../entities/story.entity';
 import { CountersService } from './counters.service';
 import { Injectable } from '@nestjs/common';
 

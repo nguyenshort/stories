@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@apollo/subgraph": "^2.0.5",
-    "@comico/shared": "0.0.14",
+    "@comico/shared": "0.0.16",
     "@nestjs/apollo": "^10.0.19",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
