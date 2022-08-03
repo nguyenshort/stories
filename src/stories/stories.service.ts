@@ -1,21 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { CreateStoryInput } from './dto/create-story.input'
 import { InjectModel } from '@nestjs/mongoose'
-import {FilterQuery, Model, ProjectionType, Types} from 'mongoose'
-import {Story, StoryDocument} from "./entities/story.entity";
-import {GetStoriesFilter} from "./filter/get-stories.filter";
-import {User} from "./entities/user.entity";
-import {CountStoriesFilter} from "./filter/count-stories.filter";
+import { FilterQuery, Model, ProjectionType, Types } from 'mongoose'
+import { Story, StoryDocument } from './entities/story.entity'
+import { GetStoriesFilter } from './filter/get-stories.filter'
+import { CountStoriesFilter } from './filter/count-stories.filter'
+import { UserFragments } from '@comico/shared'
 
 @Injectable()
 export class StoriesService {
   constructor(@InjectModel(Story.name) private model: Model<StoryDocument>) {}
 
-  async create(user: User, input: CreateStoryInput) {
+  async create(user: UserFragments, input: CreateStoryInput) {
     return this.model.create({
       ...input,
       user: new Types.ObjectId(user.id),
-      categories: input.categories.map((category) => new Types.ObjectId(category)),
+      categories: input.categories.map(
+        (category) => new Types.ObjectId(category)
+      ),
       createdAt: Date.now()
     })
   }
@@ -56,10 +58,7 @@ export class StoriesService {
     ])
   }
 
-
-  buildStoriesMatch(
-      filter: CountStoriesFilter
-  ): FilterQuery<StoryDocument> {
+  buildStoriesMatch(filter: CountStoriesFilter): FilterQuery<StoryDocument> {
     const match: FilterQuery<StoryDocument> = {}
     if (filter.status) {
       match.status = { $in: filter.status }

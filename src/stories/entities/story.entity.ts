@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Types } from 'mongoose'
-import {Directive, Field, Float, ID, ObjectType} from '@nestjs/graphql'
-import {StoryStatus} from "../enum/story.status.enum";
+import { Directive, Field, Float, ID, ObjectType } from '@nestjs/graphql'
+import { StoryStatus } from '../enum/story.status.enum'
+import { CategoryFragments, UserFragments } from '@comico/shared'
 
 export type StoryDocument = Story & Document
 
@@ -35,6 +36,7 @@ export class Story {
   @Prop({ default: '' })
   content: string
 
+  @Field(() => UserFragments)
   @Prop({
     type: Types.ObjectId,
     index: true
@@ -61,6 +63,7 @@ export class Story {
     type: [{ type: Types.ObjectId, index: true }],
     index: true
   })
+  @Field(() => [CategoryFragments])
   categories: Types.ObjectId[]
 
   // Todo: add counter
